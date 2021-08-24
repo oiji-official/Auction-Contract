@@ -10,7 +10,7 @@ contract Auction{
     string public ipfsHash;
  
     
-    enum State {Started, Running, Ended, Canceled}
+    enum State {Started, Running, Ended, Cancelled}
     State public auctionState;
     
     uint public highestBindingBid;
@@ -65,7 +65,7 @@ contract Auction{
     
     // only the owner can cancel the Auction
     function cancelAuction() public onlyOwner{
-        auctionState = State.Canceled;
+        auctionState = State.Cancelled;
     }
     
     
@@ -97,8 +97,8 @@ contract Auction{
     
     
     function finalizeAuction() public{
-       // the auction has been Canceled or Ended
-       require(auctionState == State.Canceled || block.number > endBlock); 
+       // the auction has been Cancelled or Ended
+       require(auctionState == State.Cancelled || block.number > endBlock); 
        
        // only the owner or a bidder can cancel the auction
        require(msg.sender == owner || bids[msg.sender] > 0);
@@ -107,10 +107,10 @@ contract Auction{
        address payable recipient;
        uint value;
        
-       if(auctionState == State.Canceled){ // auction canceled, not ended
+       if(auctionState == State.Cancelled){ // auction cancelled, not ended
            recipient = payable(msg.sender);
            value = bids[msg.sender];
-       }else{// auction ended, not canceled
+       }else{// auction ended, not cancelled
            if(msg.sender == owner){ //the owner finalizes the auction
                recipient = owner;
                value = highestBindingBid;
